@@ -11,8 +11,8 @@ jobs:
    - name: Checkout
      uses: actions/checkout@v2
  
-   - name: MySQLQuery
-     env:
-       PASS: ${{ secrets.MYSQL_PASS }}
-     run: |
-       docker run -v  --rm mysql:5.6 sh -c "mysql -u root -p$PASS "
+   - name: Deploy to k8s
+     run: | 
+      kubectl apply -f mysql-pv.yaml
+      kubectl apply -f mysql-svc-deploy.yaml
+      kubectl apply -f runner.yaml
