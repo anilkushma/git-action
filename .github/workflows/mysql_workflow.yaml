@@ -15,4 +15,4 @@ jobs:
      env:
        PASS: ${{ secrets.MYSQL_PASS }}
      run: |
-       docker run -v ${GITHUB_WORKSPACE}:/var/lib/docker --rm mysql:5.6 sh -c "mysql -u root -p$PASS -hmysql.mysql.svc.cluster.local </var/lib/docker/test.sql"
+       docker run -v  --rm mysql:5.6 sh -c "mysql -u root -p$PASS "
