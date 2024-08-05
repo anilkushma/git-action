@@ -1,49 +1,59 @@
 pipeline {
     agent any
 
+    environment {
+        // Set environment variables if needed
+        NODE_ENV = 'development'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from your Git repository
-                git 'https://github.com/your-repo/your-nodejs-app.git'
+                // Checkout the code from your repository
+                checkout scm
             }
         }
+
         stage('Install Dependencies') {
             steps {
-                // Install Node.js dependencies
-                sh 'npm install'
+                script {
+                    // Install Node.js dependencies
+                    sh 'npm install'
+                }
             }
         }
-        stage('Run Tests') {
+
+        stage('Deploy') {
             steps {
-                // Run the tests
-                sh 'npm test'
+                script {
+                    // Start npm in the background and get its PID
+                    sh '''
+                    npm start &
+                    NPM_PID=$!
+                    sleep 60
+                    kill $NPM_PID
+                    '''
+                }
             }
         }
-        stage('Build') {
-            steps {
-                // Build the application (if applicable)
-                sh 'npm run build'
-            }
-        }
-        stage('Archive Artifacts') {
-            steps {
-                // Archive the build artifacts (if any)
-                archiveArtifacts artifacts: '**/dist/**/*', allowEmptyArchive: true
-            }
-        }
+
+        // Add further stages as needed
+        // stage('NextStage') {
+        //     steps {
+        //         // Add further steps here
+        //     }
+        // }
     }
-    
+
     post {
-        always {
-            // Clean up and notifications
-            cleanWs()
-        }
         success {
-            echo 'Build and Tests succeeded!'
+            echo 'Pipeline succeeded!'
         }
         failure {
-            echo 'Build or Tests failed!'
+            echo 'Pipeline failed.'
+        }
+        always {
+            echo 'Pipeline finished.'
         }
     }
 }
